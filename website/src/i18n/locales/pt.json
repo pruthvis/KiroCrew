@@ -6774,7 +6774,18 @@
       "attachment_removed": "{{file}} removido dos anexos",
       "attachment_restored": "{{file}} anexado",
       "trusted_command_until": "“{{cmd}}” é confiável até {{time}}; depois disso, pergunta novamente",
-      "trusted_base_until": "Qualquer comando “{{base}}” é confiável até {{time}}; depois disso, pergunta novamente"
+      "trusted_base_until": "Qualquer comando “{{base}}” é confiável até {{time}}; depois disso, pergunta novamente",
+      "composer_action_dialog": "{{title}}, de {{app}}",
+      "composer_action_close": "Fechar",
+      "composer_action_timed_out": "{{app}} demorou demais e foi interrompido. Nada foi inserido.",
+      "composer_action_app_error": "{{app}} teve um erro. Nada foi inserido.",
+      "composer_action_revoked": "{{app}} foi desativado. Nada foi inserido.",
+      "composer_action_failed": "{{app}} não respondeu. Nada foi inserido.",
+      "composer_action_from": "Fornecido pelo app {{app}}",
+      "composer_action_footer_host": "O {{productName}} verificou o rascunho. {{app}} continua sem vê-lo.",
+      "composer_action_needs_empty": "{{app}} só pode inserir em uma mensagem vazia. Esvazie o rascunho primeiro.",
+      "composer_action_would_resolve": "O texto de {{app}} começa com / ou @, ou contém um $skill, um arquivo ou uma imagem, então seria executado em vez de enviado como texto. Não foi inserido.",
+      "composer_action_footer": "{{app}} não vê seu rascunho. O texto dele entra como está, e você decide se envia."
     },
     "chatPane": {
       "agent_list": "Lista de agentes",
@@ -11217,7 +11228,8 @@
       "link_open_remembered": "Escolhas de links lembradas",
       "link_open_choice_app": "Abre no {{name}}",
       "link_open_choice_browser": "Abre no seu navegador",
-      "link_open_forget": "Esquecer"
+      "link_open_forget": "Esquecer",
+      "grants_reconsent_composer_actions": "Botões do editor: permite que o app adicione estes botões ao menu + do editor. Um clique insere o texto do app no seu rascunho; o app não pode ver o rascunho nem enviá-lo."
     },
     "appPage": {
       "loading_app": "Carregando app…",

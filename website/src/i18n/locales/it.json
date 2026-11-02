@@ -6774,7 +6774,18 @@
       "attachment_removed": "{{file}} rimosso dagli allegati",
       "attachment_restored": "{{file}} allegato",
       "trusted_command_until": "«{{cmd}}» è attendibile fino alle {{time}}, poi verrà chiesto di nuovo",
-      "trusted_base_until": "Qualsiasi comando «{{base}}» è attendibile fino alle {{time}}, poi verrà chiesto di nuovo"
+      "trusted_base_until": "Qualsiasi comando «{{base}}» è attendibile fino alle {{time}}, poi verrà chiesto di nuovo",
+      "composer_action_dialog": "{{title}}, da {{app}}",
+      "composer_action_close": "Chiudi",
+      "composer_action_timed_out": "{{app}} ha impiegato troppo tempo ed è stata fermata. Non è stato inserito nulla.",
+      "composer_action_app_error": "{{app}} ha avuto un errore. Non è stato inserito nulla.",
+      "composer_action_revoked": "{{app}} è stata disattivata. Non è stato inserito nulla.",
+      "composer_action_failed": "{{app}} non ha risposto. Non è stato inserito nulla.",
+      "composer_action_from": "Fornito dall'app {{app}}",
+      "composer_action_footer_host": "{{productName}} ha controllato la bozza. {{app}} continua a non vederla.",
+      "composer_action_needs_empty": "{{app}} può inserire solo in un messaggio vuoto. Svuota prima la bozza.",
+      "composer_action_would_resolve": "Il testo di {{app}} inizia con / o @, o contiene un $skill, un file o un'immagine, quindi verrebbe eseguito invece di essere inviato come testo. Non è stato inserito.",
+      "composer_action_footer": "{{app}} non vede la tua bozza. Il suo testo viene inserito così com'è e sei tu a decidere se inviarlo."
     },
     "chatPane": {
       "agent_list": "Elenco degli agenti",
@@ -11217,7 +11228,8 @@
       "link_open_remembered": "Scelte dei link memorizzate",
       "link_open_choice_app": "Si apre in {{name}}",
       "link_open_choice_browser": "Si apre nel browser",
-      "link_open_forget": "Dimentica"
+      "link_open_forget": "Dimentica",
+      "grants_reconsent_composer_actions": "Pulsanti dell'editor: consente all'app di aggiungere questi pulsanti al menu + dell'editor. Un clic inserisce il testo dell'app nella tua bozza; l'app non può vedere la bozza né inviarla."
     },
     "appPage": {
       "loading_app": "Caricamento dell'app…",
