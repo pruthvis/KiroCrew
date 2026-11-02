@@ -7,6 +7,7 @@ import { SCENES, SCENE_STORAGE_KEY, SCENE_LAYOUT_SCALE, type SceneKey } from './
 import { SCENE_COMPONENTS } from './scenes/components'
 
 import { i18nT } from '../i18n/t'
+import { RadioChipGroup, radioChip } from '../components/RadioChipGroup'
 export default function WorldsPage() {
   const [scene, setScene] = useState<SceneKey>(() => {
     const saved = localStorage.getItem(SCENE_STORAGE_KEY)
@@ -49,16 +50,17 @@ export default function WorldsPage() {
           </div>
         </div>
 
-        <div className="px-4 md:px-6 pb-2" style={{
+        <RadioChipGroup className="px-4 md:px-6 pb-2" style={{
           display: 'flex', gap: 6,
           flexWrap: 'wrap',
-        }}>
+        }} ariaLabel={i18nT('pages.worldsPage.scene_label')}>
           {SCENES.map(s => (
             <button
               key={s.key}
+              type="button"
               onClick={() => changeScene(s.key)}
               title={s.desc}
-              aria-pressed={scene === s.key}
+              {...radioChip(scene === s.key)}
               aria-label={`${s.label} scene: ${s.desc}`}
               style={{
                 padding: '5px 12px',
@@ -79,7 +81,7 @@ export default function WorldsPage() {
               <span>{s.label}</span>
             </button>
           ))}
-        </div>
+        </RadioChipGroup>
         </div>
       </div>
 
