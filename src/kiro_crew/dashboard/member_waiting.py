@@ -45,6 +45,7 @@ from kiro_crew.crew_log.entry_types import (
     CREWMATE_WAITING_LIMIT,
 )
 from kiro_crew.history import HUMAN_TURN_META_KEY
+from kiro_crew.warm_task_brief_contract import WARM_TASK_BRIEF_MESSAGE_KINDS
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +90,10 @@ def _option_items(rows: list[dict[str, Any]], answered_at: float = 0.0) -> list[
         # ask (the "options are read from the newest reply only" entry in
         # docs/decisions), so any later reply, a quiet one too, retires it.
         if role not in ("user", "assistant") or is_system_notice(role, meta or {}):
+            continue
+        # A warm brief only carries the copied choices of the ask above it, so
+        # the ask stays the source of the waiting item.
+        if isinstance(meta, dict) and meta.get("kind") in WARM_TASK_BRIEF_MESSAGE_KINDS:
             continue
         if not content:
             continue
