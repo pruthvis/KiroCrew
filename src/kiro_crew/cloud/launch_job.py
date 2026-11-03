@@ -436,7 +436,8 @@ class LaunchJobStore:
                     logger.warning("Failed to read launch job %s: %s", path, e)
                     return None
                 time.sleep(0.02 * (attempt + 1))
-            except json.JSONDecodeError as e:
+            except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                # Bytes that are not UTF-8 are as unusable as bad JSON: skip the job.
                 logger.warning("Failed to parse launch job %s: %s", path, e)
                 return None
         if not isinstance(raw, dict):
@@ -453,6 +454,24 @@ class LaunchJobStore:
                 jobs.append(job)
         jobs.sort(key=lambda j: j.created_at, reverse=True)
         return jobs
+
+    def undecodable_ids(self) -> List[str]:
+        """Ids of job files whose bytes are not UTF-8, which :meth:`list` skips.
+
+        Launch admission refuses while one exists: such a record may be a launch
+        still in progress, and :meth:`list` cannot show its status.
+        """
+        if not self._root.exists():
+            return []
+        ids: List[str] = []
+        for p in self._root.glob("*.json"):
+            try:
+                p.read_bytes().decode("utf-8")
+            except UnicodeDecodeError:
+                ids.append(p.stem)
+            except OSError:
+                continue  # list() retries and reports a read error on its own
+        return sorted(ids)
 
     def adopt(self, job_id: str) -> None:
         """Record that a worker in *this* process is driving ``job_id``.

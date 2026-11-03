@@ -599,6 +599,31 @@ class TestLaunchConcurrency:
         # and no second job was written
         assert len(state.cloud_launch_store.list()) == 1
 
+    async def test_a_launch_is_refused_while_a_job_record_is_not_utf8(self, tmp_path):
+        """The list skips a job file whose bytes are not UTF-8, so its status is
+        unknown and it may be a launch still running. A new launch is refused
+        rather than risking a second billed stack."""
+        state = _state(tmp_path)
+        store = state.cloud_launch_store
+        unreadable = store.create(profile="dev", region="us-east-1", size_key="balanced")
+        store._path(unreadable.id).write_bytes(b'\xff\xfe{"status": "running"}')
+
+        try:
+            resp = await hc.api_cloud_launch_create(
+                _req(
+                    "POST",
+                    "/api/cloud/launch",
+                    state=state,
+                    body={"profile": "dev", "region": "us-east-1", "size_key": "balanced"},
+                )
+            )
+        except Exception as exc:  # a refusal is the contract, not a raise
+            pytest.fail(f"launch create raised {exc!r} instead of refusing")
+
+        assert resp.status == 409
+        assert _body(resp)["code"] == "launch_record_unreadable"
+        assert len(list(store.root.glob("*.json"))) == 1  # no second job was written
+
     async def test_two_concurrent_launches_still_yield_one_job(self, tmp_path):
         """The guard has to hold across its own await: two POSTs arriving together
         would otherwise both observe "no active job" and provision two

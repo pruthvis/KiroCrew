@@ -806,6 +806,22 @@ async def api_cloud_launch_create(request: web.Request) -> web.Response:
     async with _launch_lock(state):
         store = await _astore(state)
         existing = await _in_executor(store.list)
+        undecodable = await _in_executor(store.undecodable_ids)
+        if undecodable:
+            # A record the list skips may be a launch still running: refuse, as
+            # a launch already running is refused, rather than risk a second one.
+            _audit("launch_create", "denied", request_id=undecodable[0], error="unreadable job")
+            return web.json_response(
+                {
+                    "error": (
+                        "a crew setup record cannot be read, so a setup may still be "
+                        "running; remove the launch job file "
+                        f"{undecodable[0]}.json before starting another"
+                    ),
+                    "code": "launch_record_unreadable",
+                },
+                status=409,
+            )
         active = next((j for j in existing if not j.terminal), None)
         if active is not None:
             _audit("launch_create", "denied", request_id=active.id, error="already running")
