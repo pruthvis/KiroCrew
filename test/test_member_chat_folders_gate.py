@@ -7,7 +7,7 @@ and ``/api/chat/tags*`` route, because ``private_chat_route_refusal`` refused an
 scoped caller except ``POST .../followup``. Meanwhile ``/api/session-control/*``
 admits the same member callers -- so a conductor could create workers but could
 not put them in a folder, which its operating procedure (``session_create`` with
-``folder=``, ``chat_folder_file_self``) requires.
+``folder=``) requires.
 
 These tests pin:
 
