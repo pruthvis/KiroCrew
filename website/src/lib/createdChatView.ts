@@ -1,5 +1,5 @@
 import type { AppDispatch, RootState } from '../store'
-import { createSlot } from '../store/chatSlice'
+import { createSlot, setPendingInput } from '../store/chatSlice'
 import type { ChatSlot } from '../types'
 import { isChatPath } from '../hooks/notificationBanner'
 import { appPathname } from './basePath'
@@ -19,6 +19,10 @@ export interface CreatedChatView {
   opened: boolean
   /** The app route the user was on when the create started. */
   from: string
+  /** The create's `prefill` was staged for the new session's composer. False
+   *  when none was asked for, or when storage refused the write: only then may
+   *  the caller hand the prompt over another way. */
+  prefillStaged: boolean
 }
 
 /** The chat pages whose `/<prefix>/<slug>` follows `activeSlot`, so a create
@@ -74,7 +78,28 @@ export async function createChatForView(
   const slot = await pending.unwrap()
   const { lastCreatedActivation, activeSlot } = getState().chat
   const opened = !!slot?.key && lastCreatedActivation?.requestId === pending.requestId && activeSlot === slot.key
-  return { slot, opened, shown: opened && pageOf(appPathname()) === pageOf(from), from }
+  const shown = opened && pageOf(appPathname()) === pageOf(from)
+  // `.unwrap()` drops the meta that says whether the prefill was staged, so read
+  // it from the settled action, after everything above has read the state at the
+  // same moment it always did. Already settled, so this adds no wait.
+  // Only a fulfilled create gets here (`.unwrap()` threw otherwise), and its
+  // action carries the flag on `meta`.
+  const settled = (await pending) as { meta?: { prefillStaged?: boolean } } | undefined
+  const prefillStaged = settled?.meta?.prefillStaged === true
+  return { slot, opened, shown, from, prefillStaged }
+}
+
+/**
+ * Put `prompt` in the composer of the session a create just showed, when the
+ * create could not stage it as `prefill`. A staged prefill is delivered by the
+ * slot restore, merged with anything typed while the create ran; handing it
+ * over in memory as well would replace that merged draft with the bare
+ * prompt, so the in-memory `pendingInput` channel is only the fallback for a
+ * storage write that was refused. Call it only once the new session is the
+ * one on screen: `pendingInput` seeds whichever chat is active.
+ */
+export function handOffUnstagedPrefill(dispatch: AppDispatch, prompt: string, staged: boolean): void {
+  if (!staged) dispatch(setPendingInput(prompt))
 }
 
 /**
