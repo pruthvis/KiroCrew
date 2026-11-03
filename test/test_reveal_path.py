@@ -95,6 +95,17 @@ async def test_reveal_path_traversal_rejected(mock_sel):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("path", [5, 1.5, True, ["/tmp/a"], {"p": "/tmp/a"}])
+async def test_reveal_path_non_string_is_400(mock_sel, path):
+    """A non-string path is caller error: 400 invalid path, not a 500 TypeError."""
+    async with TestClient(TestServer(_make_app())) as client:
+        resp = await client.post("/api/reveal", json={"path": path, "action": "reveal"})
+        assert resp.status == 400
+        assert await resp.json() == {"error": "invalid path"}
+        mock_sel.log_tool_invocation.assert_not_called()
+
+
+@pytest.mark.asyncio
 async def test_reveal_remote_request_returns_copy_fallback(mock_sel, tmp_path):
     """A remote (non-direct-local) reveal request returns the copy fallback
     without spawning a subprocess."""
